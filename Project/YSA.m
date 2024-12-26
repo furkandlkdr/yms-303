@@ -1,16 +1,16 @@
 % import sonrası eğitim ve test verileri oluşturma.
 
-% data = table2array(ConcreteCompressiveStrength);
-% veri = data';
+data = table2array(ConcreteCompressiveStrength);
+veri = data';
 
-% [egitim, test] = dividerand(veri, 0.7, 0.3);
+[egitim, test] = dividerand(veri, 0.7, 0.3);
 
-% egitim_sonuc = egitim(9,:);
-% test_sonuc   = test(9,:);
+egitim_sonuc = egitim(9,:);
+test_sonuc   = test(9,:);
 
-% egitim = egitim(1:8,:);
-% test = test(1:8,:);
-
+egitim = egitim(1:8,:);
+test = test(1:8,:);
+%%
 net = newff(minmax(egitim), [10 1], {'tansig', 'purelin'}, 'trainlm');
 net = init(net);
 
@@ -24,6 +24,14 @@ net = train(net, egitim, egitim_sonuc);
 tahmin = net(test);
 mse = mean((test_sonuc - tahmin).^2);
 R2 = 1 - sum((test_sonuc - tahmin).^2)/sum((test_sonuc - mean(test_sonuc)).^2);
-
+%%
 disp(['MSE: ', num2str(mse)]);
 disp(['R^2: ', num2str(R2)]);
+
+egitim_hedef_hucre = num2cell(egitim_sonuc);
+tahmin_egitim_hucre = num2cell(net(egitim));
+test_hedef_hucre = num2cell(test_sonuc);
+tahmin_test_hucre = num2cell(tahmin);
+
+figure;
+plotregression(egitim_hedef_hucre, tahmin_egitim_hucre, 'Eğitim', test_hedef_hucre, tahmin_test_hucre, 'Test');
